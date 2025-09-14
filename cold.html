@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dark Music Player — Midnight Player (No Preloader, Fixed Cover)</title>
+  <style>
+    :root{ --bg:#070708; --panel:#0f1113; --muted:#9aa3ac; --accent1:#c94bff; --accent2:#ff6a88; --glass: rgba(255,255,255,0.03); --card-shadow: 0 10px 40px rgba(2,6,23,0.7); --radius:16px; --sidebar-width:360px; color-scheme: dark; font-family: Inter, 'Segoe UI', Roboto, Arial, sans-serif; }
+    html,body{height:100%;}
+    body{margin:0;background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.02), transparent), linear-gradient(180deg,#070707 0%, #0b0b0c 100%); color:#e6eef6; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow:hidden;}
+
+    .bg-gradient{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(600px 300px at 10% 10%, rgba(201,75,255,0.06), transparent), radial-gradient(500px 260px at 85% 80%, rgba(255,106,136,0.04), transparent); animation: bgDrift 14s linear infinite;}
+    @keyframes bgDrift{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(6px) rotate(2deg)}100%{transform:translateY(0) rotate(0deg)}}
+
+    .app{display:flex;height:100vh;width:100vw;gap:24px;position:relative;z-index:10}
+
+    /* Sidebar */
+    .sidebar{width:var(--sidebar-width);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow: var(--card-shadow);padding:24px 16px;box-sizing:border-box;border-right:1px solid rgba(255,255,255,0.03);overflow:auto;backdrop-filter: blur(6px);}
+    .brand{display:flex;align-items:center;gap:12px;padding:8px 6px;margin-bottom:12px}
+    .brand img{width:44px;height:44px;border-radius:8px;object-fit:cover;display:block}
+    .brand .mp-fallback{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800}
+    .brand h1{font-size:18px;margin:0}
+
+    .library-actions{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);color:inherit;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:transform .14s ease, box-shadow .14s ease}
+    .btn:active{transform:translateY(1px) scale(.995)}
+    .search{width:100%;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:transparent;color:var(--muted)}
+    .tracks{margin-top:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:160px}
+
+    .track{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;cursor:pointer;transition:background 160ms ease, transform 240ms cubic-bezier(.2,.9,.2,1), box-shadow .18s ease;opacity:0;transform:translateY(6px);} 
+    .track.dragging{opacity:0.6;transform:scale(.98);}
+    .track:hover{background:rgba(255,255,255,0.02);transform:translateX(8px) scale(1.01);box-shadow:0 8px 26px rgba(0,0,0,0.6)}
+    .track.active{background:linear-gradient(90deg, rgba(201,75,255,0.12), rgba(255,106,136,0.06));box-shadow:0 18px 60px rgba(201,75,255,0.06);}
+    .thumb{width:64px;height:64px;border-radius:8px;overflow:hidden;flex:0 0 64px;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .meta{display:flex;flex-direction:column}
+    .meta .title{font-size:15px;color:#e9f0f8}
+    .meta .artist{font-size:12px;color:var(--muted);margin-top:4px}
+
+    /* Main */
+    .main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;overflow:auto;gap:20px}
+
+    /* Big art - REMOVED visualizer bars and replaced with layered CSS halo + vinyl grooves */
+    .big-art{width:360px;height:360px;border-radius:999px;background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 18px 60px rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;overflow:hidden;border:6px solid rgba(255,255,255,0.03);transition:transform 320ms cubic-bezier(.2,.9,.2,1), box-shadow 300ms, filter .22s;position:relative}
+    .big-art .rim{position:absolute;inset:0;border-radius:999px;box-shadow:0 0 36px rgba(201,75,255,0.08) inset;pointer-events:none;mix-blend-mode:overlay}
+    .big-art img.cover-img{width:100%;height:100%;object-fit:cover;position:relative;z-index:3;border-radius:999px}
+    .big-art:hover{transform:translateY(-6px) scale(1.02); box-shadow:0 46px 140px rgba(201,75,255,0.18)}
+
+    /* NEW: animated halo (soft rotating conic gradient) */
+    .big-art::after{
+      content:'';position:absolute;inset:-28px;border-radius:999px;z-index:2;pointer-events:none;filter:blur(36px) saturate(120%);
+      background:conic-gradient(from 120deg, rgba(201,75,255,0.12), rgba(255,106,136,0.12), rgba(201,75,255,0.06), rgba(255,106,136,0.06));
+      opacity:0.95;mix-blend-mode:screen;animation: haloRotate 10s linear infinite;
+    }
+    @keyframes haloRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+    /* NEW: inner groove ring (subtle vinyl-like concentric lines using repeating-radial-gradient) */
+    .big-art::before{
+      content:'';position:absolute;inset:24px;border-radius:999px;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0.0) 55%, rgba(0,0,0,0.06) 56%), repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 4px);
+      opacity:0.65;mix-blend-mode:overlay;transform:scale(1.01);
+    }
+
+    /* glossy slice highlight to add depth */
+    .big-art .gloss{position:absolute;top:6%;left:4%;width:140%;height:28%;transform:rotate(-18deg);z-index:4;pointer-events:none;background:linear-gradient(90deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03), rgba(255,255,255,0.06));filter:blur(8px);opacity:0.9}
+
+    /* small orbiting sparkles for motion (pure CSS, subtle) */
+    .orbit-spark{position:absolute;width:10px;height:10px;border-radius:999px;z-index:5;pointer-events:none;box-shadow:0 6px 20px rgba(201,75,255,0.12) inset; background:radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.2) 30%, transparent 60%);}
+    .o1{left:8%;top:40%;animation: orbit1 6.6s linear infinite}
+    .o2{right:6%;top:28%;animation: orbit2 7.2s linear infinite}
+    .o3{left:48%;bottom:4%;animation: orbit3 8.8s linear infinite}
+    @keyframes orbit1{0%{transform:translate(0,0) scale(.9);opacity:.7}50%{transform:translate(18px,-22px) scale(1.1);opacity:1}100%{transform:translate(0,0) scale(.9);opacity:.7}}
+    @keyframes orbit2{0%{transform:translate(0,0) scale(.8);opacity:.6}50%{transform:translate(-22px,18px) scale(1.05);opacity:1}100%{transform:translate(0,0) scale(.8);opacity:.6}}
+    @keyframes orbit3{0%{transform:translate(0,0) scale(.85);opacity:.65}50%{transform:translate(14px,10px) scale(1.08);opacity:1}100%{transform:translate(0,0) scale(.85);opacity:.65}}
+
+    .big-art.glow{ animation: glowPulse 2.6s cubic-bezier(.2,.9,.2,1) infinite; box-shadow: 0 60px 160px rgba(201,75,255,0.12); }
+    @keyframes glowPulse{ 0%{box-shadow:0 30px 90px rgba(201,75,255,0.06); transform:translateY(0)} 25%{box-shadow:0 58px 150px rgba(255,106,136,0.14); transform:translateY(-3px) scale(1.004)} 50%{box-shadow:0 78px 200px rgba(255,106,136,0.18); transform:translateY(0) scale(1.008)} 75%{box-shadow:0 58px 150px rgba(255,106,136,0.14); transform:translateY(-3px) scale(1.004)} 100%{box-shadow:0 30px 90px rgba(201,75,255,0.06); transform:translateY(0)} }
+
+    .now{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .now .song{font-size:22px;font-weight:700}
+    .now .artist{font-size:14px;color:var(--muted)}
+
+    .progress-wrap{width:760px;max-width:92%;display:flex;align-items:center;gap:12px;margin-top:8px}
+    .time{font-size:13px;color:var(--muted);width:48px;text-align:center}
+    .progress{flex:1;height:14px;border-radius:10px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;cursor:pointer}
+    .progress .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:10px;transition:width 120ms linear}
+    .progress .bar.pulse{box-shadow:0 8px 30px rgba(201,75,255,0.08);}
+
+    .controls{display:flex;gap:28px;align-items:center;margin-top:18px;position:relative}
+    .control-btn{width:52px;height:52px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .12s ease, background .12s ease}
+    .control-btn:active{transform:scale(.96)}
+    .control-btn.big{width:72px;height:72px}
+
+    .footer-actions{display:flex;align-items:center;gap:12px;margin-top:12px;color:var(--muted)}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:11000}
+    .modal{background:#0f1113;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);width:480px;max-width:94%;box-shadow:0 18px 60px rgba(0,0,0,0.6)}
+    .modal h3{margin:0 0 8px 0}
+    .modal input[type=text]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+    .cover-preview{width:110px;height:110px;border-radius:8px;overflow:hidden;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center}
+    .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+    .fullscreen-toggle{position:fixed;right:18px;top:18px;z-index:13000}
+
+    /* helpers */
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .sidebar::-webkit-scrollbar{width:10px}
+    .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.03);border-radius:10px}
+    #fileInput{display:none} #modalCoverInput{display:none}
+
+    /* entrance animation for tracks */
+    @keyframes slideIn{to{opacity:1;transform:translateY(0) scale(1)}}
+
+    .move-controls{margin-left:12px;display:flex;flex-direction:column;gap:6px}
+    .move-controls .small-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:6px;border-radius:6px}
+    .move-controls .small-btn:active{transform:translateY(1px)}
+
+    @media (max-width:900px){.sidebar{display:none}.big-art{width:220px;height:220px}.progress-wrap{width:92%}.control-btn{width:44px;height:44px}}
+
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+  </style>
+</head>
+<body>
+
+  <div class="bg-gradient"></div>
+  <canvas id="particles" aria-hidden="true" style="position:fixed;inset:0;z-index:1;pointer-events:none"></canvas>
+
+  <div class="app" id="appRoot" style="opacity:1;transform:scale(1)">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img id="brandLogo" src="Anas.jpg" alt="Anas" onerror="this.style.display='none';document.getElementById('brandFallback').style.display='block'" style="display:block">
+        <div id="brandFallback" class="mp-fallback" style="display:none">MP</div>
+        <div>
+          <h1>Music Playe</h1>
+          
+        </div>
+      </div>
+
+      <div class="library-actions">
+        <label class="btn" for="fileInput">📂 Upload Audio</label>
+        <button class="btn" id="clearLibrary">🧹 Clear All</button>
+        <input id="fileInput" type="file" accept="audio/*" multiple />
+      </div>
+
+      <input placeholder="Search tracks..." id="search" class="search" />
+      <div class="tracks" id="trackList"></div>
+    </aside>
+
+    <main class="main">
+      <div class="big-art" id="artwork" title="Click to edit metadata (cover/title/artist)">
+        <div class="rim"></div>
+        <!-- COVER IMAGE: ensure it's on top and visible -->
+        <img class="cover-img" id="coverImg" src="" alt="cover" />
+        <div class="gloss"></div>
+        <!-- subtle orbiting sparkles -->
+        <div class="orbit-spark o1"></div>
+        <div class="orbit-spark o2"></div>
+        <div class="orbit-spark o3"></div>
+      </div>
+
+      <div class="now">
+        <div class="song" id="title">No track selected</div>
+        <div class="artist" id="artist">—</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="time" id="currentTime">0:00</div>
+        <div class="progress" id="progress"><div class="bar" id="progressBar"></div></div>
+        <div class="time" id="duration">0:00</div>
+      </div>
+
+      <div class="controls">
+        <button class="control-btn" id="prevBtn" title="Previous">⏮</button>
+        <button class="control-btn big" id="playBtn" title="Play/Pause">▶</button>
+        <button class="control-btn" id="nextBtn" title="Next">⏭</button>
+        <button class="control-btn" id="shuffleBtn" title="Shuffle">🔀</button>
+        <button class="control-btn" id="repeatBtn" title="Repeat">🔁</button>
+      </div>
+
+      <div class="footer-actions">
+        <div>Volume <input type="range" id="volume" min="0" max="1" step="0.01" value="0.9" /></div>
+        <div style="margin-left:12px">Saved tracks: <span id="count">0</span></div>
+      </div>
+
+      <audio id="audio"></audio>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Edit Track</h3>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="cover-preview" id="modalCover"></div>
+        <div style="flex:1">
+          <input id="modalTitleInput" type="text" placeholder="Title" />
+          <input id="modalArtistInput" type="text" placeholder="Artist" style="margin-top:8px" />
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:var(--muted)">Upload a cover image to replace the generated artwork.</div>
+      <div class="actions">
+        <label class="btn" for="modalCoverInput">Choose Image</label>
+        <button class="btn" id="modalSave">Save</button>
+        <button class="btn" id="modalCancel">Cancel</button>
+        <input id="modalCoverInput" type="file" accept="image/*" />
+      </div>
+    </div>
+  </div>
+
+  <footer style="position:fixed;left:0;right:0;bottom:8px;display:flex;justify-content:center"><div class="muted">Made with ❤️ —  <strong>Anas ( code breaker )</strong> Enjoy it </div></footer>
+
+  <script>
+    // IndexedDB helpers (same)
+    const DB_NAME = 'midnight-music-db'; const DB_VERSION = 3; const STORE_NAME = 'tracks';
+    function openDB(){ return new Promise((resolve,reject)=>{ const req = indexedDB.open(DB_NAME, DB_VERSION); req.onupgradeneeded = (ev)=>{ const db = ev.target.result; if(!db.objectStoreNames.contains(STORE_NAME)){ const store = db.createObjectStore(STORE_NAME, {keyPath:'id'}); store.createIndex('created', 'created', {unique:false}); } }; req.onsuccess = ()=>resolve(req.result); req.onerror = ()=>reject(req.error); }); }
+    async function idbPut(track){ const db = await openDB(); return new Promise((resolve,reject)=>{ const tx = db.transaction(STORE_NAME,'readwrite'); const store = tx.objectStore(STORE_NAME); const r = store.put(track); r.onsuccess = ()=>resolve(r.result); r.onerror = ()=>reject(r.error); }); }
+    async function idbGetAll(){ const db = await openDB(); return new Promise((resolve,reject)=>{ const tx = db.transaction(STORE_NAME,'readonly'); const store = tx.objectStore(STORE_NAME); const r = store.getAll(); r.onsuccess = ()=>resolve(r.result); r.onerror = ()=>reject(r.error); }); }
+    async function idbGet(id){ const db = await openDB(); return new Promise((resolve,reject)=>{ const tx = db.transaction(STORE_NAME,'readonly'); const store = tx.objectStore(STORE_NAME); const r = store.get(id); r.onsuccess = ()=>resolve(r.result); r.onerror = ()=>reject(r.error); }); }
+    async function idbDelete(id){ const db = await openDB(); return new Promise((resolve,reject)=>{ const tx = db.transaction(STORE_NAME,'readwrite'); const store = tx.objectStore(STORE_NAME); const r = store.delete(id); r.onsuccess = ()=>resolve(); r.onerror = ()=>reject(r.error); }); }
+
+    function fmtTime(sec){ sec = Math.floor(sec || 0); const m = Math.floor(sec/60); const s = sec%60; return m+':'+String(s).padStart(2,'0'); }
+    function uid(){ return 't_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); }
+    function generateCoverDataURL(title){ const size=512; const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=size; const ctx=canvas.getContext('2d'); const g=ctx.createLinearGradient(0,0,size,size); g.addColorStop(0,'#c94bff'); g.addColorStop(1,'#ff6a88'); ctx.fillStyle=g; ctx.fillRect(0,0,size,size); ctx.globalAlpha=0.06; ctx.fillStyle='#000'; ctx.fillRect(0,0,size,size); ctx.globalAlpha=1; const initials = title.split(' ').slice(0,2).map(s=>s[0]||'').join('').toUpperCase(); ctx.fillStyle='rgba(255,255,255,0.94)'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font='110px Arial'; ctx.fillText(initials||'♪', size/2, size/2-12); ctx.font='20px Arial'; ctx.globalAlpha=0.9; ctx.fillText(title.substring(0,24), size/2, size-40); return canvas.toDataURL('image/jpeg',0.9); }
+    async function createTrackFromFile(file, coverDataURL=null){ const id = uid(); const name = file.name.replace(/\.[^/.]+$/, '') || 'Unknown'; const blob = file.slice(0,file.size,file.type); const created = Date.now(); const audioURL = URL.createObjectURL(blob); const duration = await new Promise((res)=>{ const a = document.createElement('audio'); a.preload='metadata'; a.src = audioURL; a.onloadedmetadata = ()=>{res(a.duration||0); URL.revokeObjectURL(audioURL)}; a.onerror=()=>{res(0); URL.revokeObjectURL(audioURL)}; }); const cover = coverDataURL || generateCoverDataURL(name); const track = {id,name,artist:'Unknown Artist',created,duration,blob,cover}; // order will be set in loadTracksFromDB if missing
+      await idbPut(track); return track; }
+
+    // UI elements
+    const fileInput = document.getElementById('fileInput');
+    const trackListEl = document.getElementById('trackList');
+    const titleEl = document.getElementById('title');
+    const artistEl = document.getElementById('artist');
+    const artworkEl = document.getElementById('artwork');
+    const coverImg = document.getElementById('coverImg');
+    const audioEl = document.getElementById('audio');
+    const playBtn = document.getElementById('playBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    const countEl = document.getElementById('count');
+    const searchEl = document.getElementById('search');
+    const clearBtn = document.getElementById('clearLibrary');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const repeatBtn = document.getElementById('repeatBtn');
+    const volumeEl = document.getElementById('volume');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalCover = document.getElementById('modalCover');
+    const modalTitleInput = document.getElementById('modalTitleInput');
+    const modalArtistInput = document.getElementById('modalArtistInput');
+    const modalCoverInput = document.getElementById('modalCoverInput');
+    const modalSave = document.getElementById('modalSave');
+    const modalCancel = document.getElementById('modalCancel');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    let tracks = [];
+    let currentIndex = -1;
+    let isPlaying = false;
+    let shuffle=false; let repeat=false; let queue = [];
+    let editingTrackId = null; // for modal
+
+    function saveUIState(){ localStorage.setItem('mp_state', JSON.stringify({currentIndex,shuffle,repeat,queue})); }
+    function loadUIState(){ try{ const s = localStorage.getItem('mp_state'); if(!s) return; const o = JSON.parse(s); currentIndex = o.currentIndex ?? -1; shuffle = !!o.shuffle; repeat = !!o.repeat; queue = o.queue || []; updateShuffleUI(); updateRepeatUI(); }catch(e){console.warn(e)} }
+    function updateShuffleUI(){ shuffleBtn.style.borderColor = shuffle? 'rgba(255,255,255,0.12)':'rgba(255,255,255,0.03)'; }
+    function updateRepeatUI(){ repeatBtn.style.borderColor = repeat? 'rgba(255,255,255,0.12)':'rgba(255,255,255,0.03)'; }
+
+    async function loadTracksFromDB(){ const all = await idbGetAll(); // default to newest-first order if no saved order exists
+      all.sort((a,b)=>b.created - a.created);
+      if(all.length && !all.some(t=>t.order!==undefined)){
+        // assign initial stable order (0 = top)
+        for(let i=0;i<all.length;i++){ all[i].order = i; await idbPut(all[i]); }
+      }
+      // ensure array ordered by 'order'
+      all.sort((a,b)=> (a.order ?? a.created) - (b.order ?? b.created));
+      tracks = all;
+      if(!queue || queue.length===0) queue = tracks.map(t=>t.id);
+      renderTracks(searchEl.value||''); }
+
+    function renderTracks(filterText=''){
+      trackListEl.innerHTML='';
+      // show only matching tracks but keep global 'tracks' ordering
+      const list = tracks.filter(t=>t.name.toLowerCase().includes(filterText.toLowerCase()) || (t.artist||'').toLowerCase().includes(filterText.toLowerCase()));
+      list.forEach((t,idx)=>{
+        const item = document.createElement('div');
+        item.className='track';
+        item.style.animation = `slideIn .34s cubic-bezier(.2,.9,.2,1) forwards`;
+        item.style.animationDelay = `${idx*40}ms`;
+        item.dataset.id = t.id;
+        item.draggable = true;
+        if(currentIndex!=-1 && tracks[currentIndex]?.id === t.id) item.classList.add('active');
+        const thumb = document.createElement('div'); thumb.className='thumb'; const img = document.createElement('img'); img.src=t.cover; thumb.appendChild(img);
+        const meta = document.createElement('div'); meta.className='meta'; const title = document.createElement('div'); title.className='title'; title.textContent=t.name; const artist = document.createElement('div'); artist.className='artist'; artist.textContent=t.artist || ('unknown • ' + fmtTime(t.duration)); meta.appendChild(title); meta.appendChild(artist);
+        item.appendChild(thumb); item.appendChild(meta);
+
+        const actions = document.createElement('div'); actions.className='actions';
+        
+        const del = document.createElement('div'); del.className='small-icon'; del.title='Delete'; del.textContent='🗑'; del.onclick = async (ev)=>{ ev.stopPropagation(); if(confirm('Delete this track?')){ await idbDelete(t.id); await loadTracksFromDB(); } };
+        // move buttons (up/down)
+        const moveWrap = document.createElement('div'); moveWrap.className = 'move-controls';
+        const up = document.createElement('button'); up.className='small-btn'; up.title='Move up'; up.textContent='↑'; up.onclick = (ev)=>{ ev.stopPropagation(); moveTrackUp(t.id); };
+        const down = document.createElement('button'); down.className='small-btn'; down.title='Move down'; down.textContent='↓'; down.onclick = (ev)=>{ ev.stopPropagation(); moveTrackDown(t.id); };
+        moveWrap.appendChild(up); moveWrap.appendChild(down);
+
+         actions.appendChild(del); actions.appendChild(moveWrap);
+        item.appendChild(actions);
+
+        // drag handlers
+        item.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', t.id); item.classList.add('dragging'); });
+        item.addEventListener('dragend', async ()=>{ item.classList.remove('dragging'); await persistOrderFromDOM(); });
+
+        item.onclick = ()=>{ const indexInTracks = tracks.findIndex(x=>x.id===t.id); if(indexInTracks!==-1){ currentIndex = indexInTracks; playTrackAtCurrentIndex(); } };
+        trackListEl.appendChild(item);
+      });
+      countEl.textContent = tracks.length;
+    }
+
+    function showArtworkLoader(show){ if(show) artworkEl.style.filter = 'blur(6px) grayscale(.08)'; else artworkEl.style.filter = 'none'; }
+
+    async function loadTrackById(id){ const t = await idbGet(id); if(!t) return null; const blob = t.blob instanceof Blob ? t.blob : new Blob([t.blob]); const url = URL.createObjectURL(blob); showArtworkLoader(true); audioEl.src = url; titleEl.textContent = t.name; artistEl.textContent = t.artist||'Unknown Artist'; // ensure visible cover set
+      coverImg.src = t.cover; coverImg.onload = ()=>{ showArtworkLoader(false); }; durationEl.textContent = fmtTime(t.duration); return t; }
+
+    async function playTrackAtCurrentIndex(){ if(currentIndex<0 || currentIndex>=tracks.length) return; const id = tracks[currentIndex].id; await loadTrackById(id); audioEl.currentTime = 0; try{ await audioEl.play(); isPlaying=true; onPlayVisuals(); }catch(e){ isPlaying=false; } updatePlayUI(); renderTracks(searchEl.value||''); saveUIState(); }
+
+    function updatePlayUI(){ playBtn.textContent = isPlaying? '⏸':'▶'; const art = document.querySelector('.big-art'); if(isPlaying) art.classList.add('glow'); else art.classList.remove('glow'); }
+
+    function nextIndex(){ if(shuffle){ if(tracks.length<=1) return currentIndex; let idx = Math.floor(Math.random()*tracks.length); if(idx===currentIndex) idx = (idx+1)%tracks.length; return idx; } return (currentIndex + 1) % tracks.length; }
+    function prevIndex(){ if(shuffle){ let idx = Math.floor(Math.random()*tracks.length); if(idx===currentIndex) idx = (idx+1)%tracks.length; return idx; } return (currentIndex - 1 + tracks.length) % tracks.length; }
+
+    function onPlayVisuals(){ const t = tracks[currentIndex]; if(!t) return; const art = document.querySelector('.big-art'); art.animate([{ boxShadow: '0 18px 60px rgba(0,0,0,0.7)' }, { boxShadow: '0 30px 120px rgba(255,106,136,0.12)' }, { boxShadow: '0 18px 60px rgba(0,0,0,0.7)' }], { duration: 1200, easing: 'ease-out' }); }
+
+    // NOTE: visualizer removed by request. audio context kept minimal (no analyser) so playback works with webaudio if needed.
+    let audioCtx=null, sourceNode=null;
+    function ensureAudioContext(){ if(audioCtx) return; audioCtx = new (window.AudioContext||window.webkitAudioContext)(); try{ sourceNode = audioCtx.createMediaElementSource(audioEl); sourceNode.connect(audioCtx.destination); }catch(e){ /* cross-origin/invalid state - ignore gracefully */ } }
+
+
+    progress.addEventListener('click',(ev)=>{ const rect = progress.getBoundingClientRect(); const x = ev.clientX - rect.left; const pct = Math.max(0, Math.min(1, x/rect.width)); if(audioEl.duration) audioEl.currentTime = audioEl.duration * pct; });
+    audioEl.addEventListener('timeupdate',()=>{ const cur = audioEl.currentTime || 0; const dur = audioEl.duration || 0; currentTimeEl.textContent = fmtTime(cur); if(dur) progressBar.style.width = (cur/dur*100)+'%'; });
+    audioEl.addEventListener('ended',()=>{ if(repeat){ audioEl.currentTime = 0; audioEl.play(); } else { if(tracks.length===0) return; currentIndex = nextIndex(); playTrackAtCurrentIndex(); } });
+
+
+    fileInput.addEventListener('change', async (ev)=>{ const files = Array.from(ev.target.files||[]); if(files.length===0) return; const added=[]; for(const f of files){ if(!f.type.startsWith('audio')) continue; const t = await createTrackFromFile(f); added.push(t); } await loadTracksFromDB(); if(added.length>0){ const id = added[0].id; const idx = tracks.findIndex(x=>x.id===id); if(idx!==-1){ currentIndex = idx; playTrackAtCurrentIndex(); } } fileInput.value=''; });
+
+    playBtn.addEventListener('click', async ()=>{ if(!audioEl.src){ if(tracks.length>0){ currentIndex = 0; await playTrackAtCurrentIndex(); } return; } if(audioEl.paused){ try{ if(!audioCtx) ensureAudioContext(); if(audioCtx && audioCtx.state==='suspended') await audioCtx.resume(); await audioEl.play(); isPlaying=true; onPlayVisuals(); }catch(e){ isPlaying=false; } } else { audioEl.pause(); isPlaying=false; } updatePlayUI(); });
+    prevBtn.addEventListener('click', ()=>{ if(tracks.length===0) return; currentIndex = prevIndex(); playTrackAtCurrentIndex(); });
+    nextBtn.addEventListener('click', ()=>{ if(tracks.length===0) return; currentIndex = nextIndex(); playTrackAtCurrentIndex(); });
+    shuffleBtn.addEventListener('click', ()=>{ shuffle = !shuffle; updateShuffleUI(); saveUIState(); });
+    repeatBtn.addEventListener('click', ()=>{ repeat = !repeat; updateRepeatUI(); saveUIState(); });
+    volumeEl.addEventListener('input', ()=>{ audioEl.volume = parseFloat(volumeEl.value); });
+    clearBtn.addEventListener('click', async ()=>{ if(!confirm('Delete ALL tracks from library? This cannot be undone.')) return; const all = await idbGetAll(); for(const t of all) await idbDelete(t.id); tracks = []; currentIndex=-1; audioEl.pause(); audioEl.removeAttribute('src'); coverImg.src=''; titleEl.textContent='No track selected'; artistEl.textContent='—'; renderTracks(); saveUIState(); });
+    searchEl.addEventListener('input', ()=>renderTracks(searchEl.value||''));
+
+    // modal editing
+    function openEditModal(trackId){ editingTrackId = trackId; document.getElementById('modalBackdrop').style.display='flex'; const t = tracks.find(x=>x.id===trackId); modalTitleInput.value = t.name; modalArtistInput.value = t.artist || ''; modalCover.innerHTML = ''; const img=document.createElement('img'); img.src = t.cover; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; modalCover.appendChild(img); }
+    function closeEditModal(){ editingTrackId=null; document.getElementById('modalBackdrop').style.display='none'; modalCoverInput.value=''; }
+    modalCancel.addEventListener('click', ()=>closeEditModal());
+    modalCoverInput.addEventListener('change', async (ev)=>{ const f = ev.target.files[0]; if(!f) return; const dataURL = await readFileAsDataURL(f); modalCover.innerHTML=''; const img=document.createElement('img'); img.src=dataURL; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; modalCover.appendChild(img); modalCover.dataset.new = dataURL; });
+    modalSave.addEventListener('click', async ()=>{ if(!editingTrackId) return; const t = await idbGet(editingTrackId); t.name = modalTitleInput.value || t.name; t.artist = modalArtistInput.value || t.artist; if(modalCover.dataset.new){ t.cover = modalCover.dataset.new; delete modalCover.dataset.new; } await idbPut(t); await loadTracksFromDB(); if(tracks[currentIndex]?.id === editingTrackId){ await loadTrackById(editingTrackId); } closeEditModal(); });
+
+    artworkEl.addEventListener('click', ()=>{ if(currentIndex>=0 && tracks[currentIndex]) openEditModal(tracks[currentIndex].id); else alert('Select a track first to edit its metadata.'); });
+
+    function readFileAsDataURL(file){ return new Promise((res,rej)=>{ const rd = new FileReader(); rd.onload = ()=>res(rd.result); rd.onerror = ()=>rej(rd.error); rd.readAsDataURL(file); }); }
+
+    // DRAG / REORDER helpers
+    function getDragAfterElement(container, y){ const draggableElements = [...container.querySelectorAll('.track:not(.dragging)')]; return draggableElements.reduce((closest, child) => { const box = child.getBoundingClientRect(); const offset = y - box.top - box.height/2; if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } else { return closest; } }, { offset: Number.NEGATIVE_INFINITY }).element; }
+
+    async function persistOrderFromDOM(){ // read current DOM order and persist to DB
+      const ids = Array.from(trackListEl.children).map(el => el.dataset.id).filter(Boolean);
+      // build new tracks array while preserving items not currently visible in filtered view
+      const newOrder = [];
+      // first, push tracks that are visible in the DOM in that order
+      ids.forEach(id => { const t = tracks.find(x=>x.id===id); if(t) newOrder.push(t); });
+      // then append remaining tracks that are not shown due to filtering
+      tracks.forEach(t=>{ if(!ids.includes(t.id)) newOrder.push(t); });
+      // assign order index and persist
+      tracks = newOrder;
+      for(let i=0;i<tracks.length;i++){ tracks[i].order = i; await idbPut(tracks[i]); }
+      renderTracks(searchEl.value||'');
+    }
+
+    // attach dragover to container so element moves while dragging
+    trackListEl.addEventListener('dragover', (e)=>{ e.preventDefault(); const afterEl = getDragAfterElement(trackListEl, e.clientY); const dragging = trackListEl.querySelector('.track.dragging'); if(!dragging) return; if(afterEl == null) trackListEl.appendChild(dragging); else trackListEl.insertBefore(dragging, afterEl); });
+
+    // move up/down (buttons)
+    async function moveTrackUp(id){ const idx = tracks.findIndex(t=>t.id===id); if(idx>0){ const tmp = tracks[idx-1]; tracks[idx-1] = tracks[idx]; tracks[idx] = tmp; for(let i=0;i<tracks.length;i++){ tracks[i].order = i; await idbPut(tracks[i]); } renderTracks(searchEl.value||''); } }
+    async function moveTrackDown(id){ const idx = tracks.findIndex(t=>t.id===id); if(idx>-1 && idx<tracks.length-1){ const tmp = tracks[idx+1]; tracks[idx+1] = tracks[idx]; tracks[idx] = tmp; for(let i=0;i<tracks.length;i++){ tracks[i].order = i; await idbPut(tracks[i]); } renderTracks(searchEl.value||''); } }
+
+    async function init(){ loadUIState(); await loadTracksFromDB(); if(currentIndex>=0 && currentIndex<tracks.length){ await loadTrackById(tracks[currentIndex].id); updatePlayUI(); } }
+    init();
+    window.addEventListener('beforeunload', saveUIState);
+
+    // simple particles (kept)
+    (function initParticles(){ const canvas = document.getElementById('particles'); const ctx = canvas.getContext('2d'); let W=0,H=0; let particles=[]; function resize(){ W=canvas.width = innerWidth; H=canvas.height = innerHeight; particles = Array.from({length: Math.max(12, Math.floor(W*H/180000))}).map(()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+0.4, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2, hue: Math.random()*360})); }
+      function draw(){ ctx.clearRect(0,0,W,H); for(const p of particles){ p.x += p.vx; p.y += p.vy; if(p.x< -20) p.x = W+20; if(p.x> W+20) p.x = -20; if(p.y< -20) p.y = H+20; if(p.y> H+20) p.y = -20; ctx.beginPath(); const grd = ctx.createRadialGradient(p.x,p.y,p.r*0.2,p.x,p.y,p.r*6); grd.addColorStop(0, `hsla(${p.hue},85%,70%,0.06)`); grd.addColorStop(1, `hsla(${p.hue},85%,70%,0)`); ctx.fillStyle = grd; ctx.fillRect(p.x-p.r*6,p.y-p.r*6,p.r*12,p.r*12); }
+        requestAnimationFrame(draw);
+      }
+      addEventListener('resize', resize); resize(); draw(); })();
+
+  </script>
+</body>
+</html>
