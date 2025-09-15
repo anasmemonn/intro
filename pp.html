@@ -1,608 +1,1306 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>1% Better Everyday</title>
-  <link rel="icon" href="imagess.jpg" type="image/jpg">
-  <!-- Manifest file ko link karna -->
-  <link rel="manifest" href="/final/manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .wrapper {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      /* Scale up to compensate for 67% zoom */
-      transform: scale(1.49);
-      transform-origin: center;
-    }
-    body {
+    * {
       margin: 0;
-      padding: 20px;
-      background: #ddd;
-      font-family: "Times New Roman", serif;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Georgia', serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #e0c7a1, #f5e6d3);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 100vw;
-      min-height: 100vh;
-      transform: scale(1.49);
-      transform-origin: top center;
+      padding: 20px;
       overflow-x: hidden;
-      overflow-y: auto;
-      scroll-behavior: smooth;
     }
-    /* Thinnest possible scrollbar */
-    body::-webkit-scrollbar {
-      width: 2px;
+    
+    .header {
+      text-align: center;
+      margin: 10px 0 20px;
+      color: #5c3e1e;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 1000px;
+      position: relative;
     }
-    body::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
+    
+    .header h1 {
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      color: #5c3e1e;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
-    body::-webkit-scrollbar-track {
-      background: transparent;
+    
+    .header p {
+      font-style: italic;
+      color: #7a5c3c;
+      font-size: 1.2rem;
+      margin-top: 5px;
     }
-    h1 {
-      margin-bottom: 20px;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      color: #333;
+    
+    .stats-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      margin: 20px 0;
     }
-    .page-container {
-      width: 550px; /* Updated width */
-      height: 850px;
-      background: linear-gradient(to bottom, #f5e6d3, #e0c7a1);
+    
+    .streak-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 15px 25px;
       border-radius: 50px;
-      border: 4px solid #fff;
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.3);
-      padding: 50px 30px;
-      position: absolute;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      flex: 1;
+      min-width: 300px;
+      max-width: 400px;
+      background: linear-gradient(135deg, rgba(245, 230, 211, 0.8), rgba(224, 199, 161, 0.8));
+      border: 2px solid #fff;
+    }
+    
+    .streak-badge {
+      font-size: 2.2rem;
+      background: white;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+    
+    .streak-info {
+      text-align: center;
+      flex-grow: 1;
+    }
+    
+    .streak-count {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #5c3e1e;
+    }
+    
+    .streak-label {
+      font-size: 1rem;
+      color: #7a5c3c;
+    }
+    
+    .progress-container {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 25px;
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      position: relative;
+      background: linear-gradient(135deg, rgba(245, 230, 211, 0.8), rgba(224, 199, 161, 0.8));
+      border: 2px solid #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .progress-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .progress-title h3 {
+      color: #5c3e1e;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    
+    .progress-bar {
+      height: 25px;
+      background: #e0c7a1;
+      border-radius: 12px;
+      margin-top: 15px;
       overflow: hidden;
-      transform-style: preserve-3d;
-      perspective: 1200px;
-      backface-visibility: hidden;
+      border: 1px solid #c5a880;
+      position: relative;
     }
-    /* Minimal Navigation Icons */
-    .nav-icon {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2rem;
-      color: #333;
-      cursor: pointer;
-      user-select: none;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+    
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #8b6b46, #5c3e1e);
+      border-radius: 12px;
+      width: 0%;
+      transition: width 0.8s ease;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
     }
-    .page-container:hover .nav-icon {
-      opacity: 1;
+    
+    .days-completed {
+      text-align: center;
+      font-weight: bold;
+      color: #5c3e1e;
+      margin-top: 15px;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: space-between;
     }
-    .nav-icon:hover {
-      transform: translateY(-50%) scale(1.1);
-    }
-    .nav-prev {
-      left: 10px;
-    }
-    .nav-next {
-      right: 10px;
-    }
-    /* Save Buttons with icon */
-    #saveBtn, #saveWeeklyBtn {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background: #333;
-      color: #fff;
+    
+    .reset-btn {
+      background: #8b6b46;
+      color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 30px;
+      padding: 10px 20px;
       cursor: pointer;
-      z-index: 5;
-      transition: background 0.3s ease;
+      font-size: 1rem;
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
-    #saveBtn:hover, #saveWeeklyBtn:hover {
-      background: #555;
+    
+    .reset-btn:hover {
+      background: #5c3e1e;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.25);
     }
-    /* Content Styles */
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+    
+    .page-container {
+      background: linear-gradient(to bottom, #f5e6d3, #e0c7a1);
+      border-radius: 25px;
+      border: 4px solid #fff;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.25);
+      padding: 35px;
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      min-width: 300px;
+      max-width: 800px;
+      min-height: 750px;
+    }
+    
     h2 {
       text-align: center;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       letter-spacing: 1px;
+      color: #5c3e1e;
+      border-bottom: 3px solid #c5a880;
+      padding-bottom: 10px;
+      font-size: 2rem;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
+    
     .date-label {
       text-align: center;
-      font-size: 1rem;
-      margin-bottom: 10px;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
       font-weight: bold;
+      color: #7a5c3c;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
     }
+    
     .quote {
       font-style: italic;
-      margin-bottom: 15px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-      font-weight: bolder;
+      margin-bottom: 25px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 15px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+      border: 1px solid rgba(197, 168, 128, 0.3);
     }
+    
     .quote p {
       margin-bottom: 5px;
-      color: #001637;
-      font-weight: bolder;
+      color: #3a2c1e;
+      line-height: 1.5;
+      font-size: 1.15rem;
     }
+    
     .quote span {
       display: block;
       text-align: right;
-      font-size: 0.85rem;
-      color: #480a0a;
-      font-weight: bolder;
+      font-size: 1.1rem;
+      color: #5c3e1e;
+      font-weight: bold;
+      margin-top: 10px;
+      font-style: normal;
     }
+    
     .section-title {
-      font-size: 0.9rem;
+      font-size: 1.2rem;
       text-transform: uppercase;
-      margin: 15px 0 5px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 3px;
+      margin: 25px 0 15px;
+      border-bottom: 2px solid #c5a880;
+      padding-bottom: 8px;
       letter-spacing: 0.5px;
+      color: #5c3e1e;
+      font-weight: 700;
     }
+    
     ul {
       list-style: none;
       padding: 0;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
+    
     li {
-      margin-bottom: 8px;
+      margin-bottom: 15px;
       display: flex;
       align-items: center;
     }
-    /* Updated Input Style: Underline design with creative placeholder */
-    input[type="text"],
-    input[type="number"] {
-      width: 80%;
-      padding: 5px 0;
-      border: none;
-      border-bottom: 2px solid #000;
-      background: transparent;
-      font-family: "Times New Roman", serif;
-      transition: border-color 0.3s ease;
+    
+    .prayer-container, .study-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-bottom: 2px solid #555;
-      outline: none;
+    
+    .prayer-item, .study-item {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 10px 20px;
+      border-radius: 30px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+      flex: 1;
+      min-width: 120px;
+      transition: transform 0.3s ease;
     }
-    /* Placeholder styling for a creative and smaller look */
-    input::placeholder,
-    textarea::placeholder {
-      font-family: "Times New Roman", serif;
-      font-size: 0.85em;
-      color: #888;
+    
+    .prayer-item:hover, .study-item:hover {
+      transform: translateY(-3px);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
     }
-    /* Custom Agenda Checkbox */
+    
+    .study-item {
+      justify-content: center;
+    }
+    
     .custom-checkbox {
       display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid #000;
+      width: 25px;
+      height: 25px;
+      border: 2px solid #5c3e1e;
       border-radius: 50%;
-      margin-right: 10px;
+      margin-right: 12px;
       vertical-align: middle;
       cursor: pointer;
+      position: relative;
+      background: #f5e6d3;
+      transition: all 0.2s ease;
     }
+    
     .custom-checkbox[data-state="0"] {
-      background: none;
+      background: #f5e6d3;
     }
+    
     .custom-checkbox[data-state="1"] {
-      background: green;
+      background: #4CAF50;
     }
+    
     .custom-checkbox[data-state="2"] {
-      background: red;
+      background: #F44336;
     }
+    
     .custom-checkbox[data-state="1"]::after,
     .custom-checkbox[data-state="2"]::after {
       content: attr(data-symbol);
       display: block;
-      color: #fff;
+      color: white;
       text-align: center;
-      line-height: 18px;
-    }
-    /* Keep rating boxes unchanged */
-    .rating-box {
-      display: inline-block;
-      margin-right: 20px;
-      margin-bottom: 10px;
-    }
-    .rating-box label {
-      margin-right: 5px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
       font-weight: bold;
     }
-    .rating-box input[type="number"] {
-      width: 50px;
-      padding: 4px;
-      border: 1px solid #aaa;
-      border-radius: 4px;
-      text-align: center;
-    }
-    /* Reflection textarea adjustment */
-    textarea#reflection {
+    
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
-      height: 130px;
+      padding: 10px 0;
+      border: none;
+      border-bottom: 2px solid #c5a880;
+      background: transparent;
+      font-family: "Georgia", serif;
+      transition: border-color 0.3s ease;
+      font-size: 1.1rem;
     }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-bottom: 2px solid #8b6b46;
+      outline: none;
+    }
+    
+    input::placeholder,
+    textarea::placeholder {
+      font-family: "Georgia", serif;
+      font-size: 1em;
+      color: #9e8567;
+    }
+    
+    .rating-container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .rating-box {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+    }
+    
+    .rating-box label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #5c3e1e;
+      font-size: 1.15rem;
+    }
+    
+    .rating-box input[type="number"] {
+      width: 90px;
+      padding: 10px;
+      border: 1px solid #c5a880;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
     textarea {
       width: 100%;
-      min-height: 60px;
-      margin-bottom: 10px;
-      padding: 6px 8px;
-      border: none;
-      border-bottom: 1px dotted #999;
-      resize: vertical;
-      background: transparent;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    .thankful-textarea {
       min-height: 120px;
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #c5a880;
+      border-radius: 15px;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.4);
+      font-size: 1.1rem;
+      box-sizing: border-box;
+      font-family: "Georgia", serif;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
     }
-    /* Weekly Review Textareas equal size */
-    .weekly-review textarea {
-      height: 200px;
+    
+    .thankful-textarea {
+      min-height: 140px;
+    }
+    
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+    
+    .nav-btn {
+      background: #8b6b46;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .nav-btn:hover {
+      background: #5c3e1e;
+      transform: scale(1.08);
+      box-shadow: 0 7px 14px rgba(0,0,0,0.25);
+    }
+    
+    #saveBtn, #saveWeeklyBtn {
+      background: #5c3e1e;
+      color: white;
+      border: none;
+      border-radius: 35px;
+      padding: 14px 30px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+      font-weight: 600;
+    }
+    
+    #saveBtn:hover, #saveWeeklyBtn:hover {
+      background: #3a2818;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+    
+    .notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #5c3e1e;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 35px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+      font-size: 1.1rem;
+    }
+    
+    .notification.show {
+      opacity: 1;
+    }
+    
+    .reset-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .reset-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .reset-content {
+      background: #f5e6d3;
+      padding: 35px;
+      border-radius: 25px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+      border: 3px solid #fff;
+    }
+    
+    .reset-content h3 {
+      color: #5c3e1e;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+      border-bottom: 2px solid #c5a880;
+      padding-bottom: 15px;
+    }
+    
+    .reset-options {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    
+    .reset-options button {
+      padding: 14px;
+      border: none;
+      border-radius: 35px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .reset-options button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    }
+    
+    .reset-today {
+      background: #8b6b46;
+      color: white;
+    }
+    
+    .reset-all {
+      background: #c44;
+      color: white;
+    }
+    
+    .reset-365 {
+      background: #5c3e1e;
+      color: white;
+    }
+    
+    .cancel-reset {
+      background: #ddd;
+      color: #333;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.2rem;
+      }
+      
+      .stats-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .streak-container, .progress-container {
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .page-container {
+        padding: 25px;
+        min-height: auto;
+      }
+      
+      .prayer-container, .study-container {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .prayer-item, .study-item {
+        min-width: 100%;
+      }
+      
+      .rating-container {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .btn-container {
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+      }
+      
+      #saveBtn, #saveWeeklyBtn {
+        width: 100%;
+        order: 2;
+      }
+      
+      .nav-btn {
+        width: 48%;
+        border-radius: 35px;
+        height: auto;
+        padding: 12px 0;
+      }
+      
+      .nav-btn#prevBtn {
+        order: 1;
+      }
+      
+      .nav-btn#nextBtn {
+        order: 3;
+      }
+      
+      .reset-content {
+        padding: 25px;
+      }
+      
+      .streak-badge {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .progress-title h3 {
+        font-size: 1.2rem;
+      }
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .page-container {
+        min-height: 700px;
+      }
+    }
+    
+    @media (min-width: 1200px) {
+      .page-container {
+        max-width: 850px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- A4 Page Container -->
-  <div class="page-container" id="pageContainer">
-    <!-- Navigation Icons will be added dynamically -->
+  <div class="header">
+    <h1>1% Better Everyday</h1>
+    <p>Track your progress and grow each day</p>
   </div>
-  <script>
-    /* CONFIGURATION */
-    const TOTAL_DAYS = 365; // Total days to track
-    // Set start date to February 21, 2025 as requested
-    let startDate = new Date("2025-02-21");
-    // Retrieve currentOffset from localStorage if available, else default to 0
-    let currentOffset = parseInt(localStorage.getItem("currentOffset") || "0", 10);
+  
+  <div class="stats-container">
+    <div class="streak-container" id="streakContainer">
+      <div class="streak-badge" id="streakBadge">🔰</div>
+      <div class="streak-info">
+        <div class="streak-count" id="streakCount">0 days</div>
+        <div class="streak-label">Current Streak</div>
+      </div>
+    </div>
     
-    // Additional motivational quotes added
+    <div class="progress-container">
+      <div class="progress-title">
+        <h3>Year Progress</h3>
+        <button class="reset-btn" id="resetBtn">
+          <i class="fas fa-sync-alt"></i> Reset
+        </button>
+      </div>
+      <div class="progress-bar">
+        <div class="progress" id="yearProgress"></div>
+      </div>
+      <div class="days-completed" id="daysCounter">
+        <span>Day 0</span>
+        <span>365 Days</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="page-container" id="pageContainer">
+      <!-- Content will be generated dynamically -->
+    </div>
+  </div>
+  
+  <div class="notification" id="notification">Data saved successfully!</div>
+  
+  <div class="reset-modal" id="resetModal">
+    <div class="reset-content">
+      <h3>Reset Planner</h3>
+      <p>Select the type of reset you want:</p>
+      <div class="reset-options">
+        <button class="reset-today" id="resetToday">
+          <i class="fas fa-calendar-day"></i> Reset Today's Data
+        </button>
+        <button class="reset-365" id="reset365">
+          <i class="fas fa-calendar-alt"></i> Restart 365-Day Journey
+        </button>
+        <button class="reset-all" id="resetAll">
+          <i class="fas fa-trash-alt"></i> Reset All Data
+        </button>
+        <button class="cancel-reset" id="cancelReset">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const TOTAL_DAYS = 365;
+    let startDate = new Date();
+    let currentOffset = 0;
+    let coldModeStreak = 0;
+    
+    // Check if start date exists in localStorage
+    if (localStorage.getItem('startDate')) {
+      startDate = new Date(localStorage.getItem('startDate'));
+    } else {
+      // Save today as start date
+      localStorage.setItem('startDate', startDate.toISOString());
+    }
+    
+    // Load current offset
+    if (localStorage.getItem('currentOffset')) {
+      currentOffset = parseInt(localStorage.getItem('currentOffset'));
+    }
+    
+    // Load cold mode streak
+    if (localStorage.getItem('coldModeStreak')) {
+      coldModeStreak = parseInt(localStorage.getItem('coldModeStreak'));
+    }
+    
+    // Load completed days
+    let completedDays = [];
+    if (localStorage.getItem('completedDays')) {
+      completedDays = JSON.parse(localStorage.getItem('completedDays'));
+    }
+    
+    // Quotes collection
     const quotes = [
       { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
       { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
-      { text: "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.", author: "Maya Angelou" },
-      { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
-      { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-      { text: "Everything you’ve ever wanted is on the other side of fear.", author: "George Addair" },
-      { text: "Hardships often prepare ordinary people for an extraordinary destiny.", author: "C.S. Lewis" },
-      { text: "Don't be pushed around by the fears in your mind. Be led by the dreams in your heart.", author: "Roy T. Bennett" },
-      { text: "It always seems impossible until it is done.", author: "Nelson Mandela" },
-      { text: "Dream big and dare to fail.", author: "Norman Vaughan" },
-      { text: "The best way to predict your future is to create it.", author: "Abraham Lincoln" },
-      { text: "Don't let yesterday take up too much of today.", author: "Will Rogers" },
-      { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
-      { text: "If you can dream it, you can do it.", author: "Walt Disney" },
-      { text: "Keep your face always toward the sunshine—and shadows will fall behind you.", author: "Walt Whitman" },
-      { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
-      { text: "Go confidently in the direction of your dreams! Live the life you've imagined.", author: "Henry David Thoreau" },
-      { text: "The harder you work for something, the greater you’ll feel when you achieve it.", author: "Anonymous" },
-      { text: "Don't stop when you're tired. Stop when you're done.", author: "Anonymous" },
       { text: "Little by little, a little becomes a lot.", author: "Tanzanian Proverb" },
       { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-      { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
-      { text: "Success doesn't just find you. You have to go out and get it.", author: "Anonymous" },
-      { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
-      { text: "Don't wait for opportunity. Create it.", author: "Anonymous" },
-      { text: "Sometimes we're tested not to show our weaknesses, but to discover our strengths.", author: "Anonymous" },
-      { text: "If you want to achieve greatness, stop asking for permission.", author: "Anonymous" },
-      { text: "Success is walking from failure to failure with no loss of enthusiasm.", author: "Winston Churchill" },
-      { text: "Don’t limit your challenges. Challenge your limits.", author: "Anonymous" },
-      { text: "Opportunities don't happen, you create them.", author: "Chris Grosser" },
       { text: "Don't count the days, make the days count.", author: "Muhammad Ali" },
-      { text: "I am not a product of my circumstances. I am a product of my decisions.", author: "Stephen Covey" },
-      { text: "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.", author: "Christian D. Larson" },
-      { text: "What we achieve inwardly will change outer reality.", author: "Plutarch" },
-      { text: "If you want to live a happy life, tie it to a goal, not to people or things.", author: "Albert Einstein" },
-      { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
-      { text: "A champion is defined not by their wins but by how they can recover when they fall.", author: "Serena Williams" },
-      { text: "Your passion is waiting for your courage to catch up.", author: "Isabelle Lafleche" },
-      { text: "Magic is believing in yourself, if you can do that, you can make anything happen.", author: "Johann Wolfgang von Goethe" },
-      { text: "If you want to fly, give up everything that weighs you down.", author: "Buddha" },
-      { text: "The only way to achieve the impossible is to believe it is possible.", author: "Charles Kingsleigh" },
-      { text: "Sometimes you win, sometimes you learn.", author: "John C. Maxwell" },
-      { text: "Don't be busy, be productive.", author: "Anonymous" },
-      { text: "Great things never come from comfort zones.", author: "Anonymous" },
+      { text: "Success doesn't just find you. You have to go out and get it.", author: "Anonymous" },
       { text: "Dream it. Wish it. Do it.", author: "Anonymous" },
-      { text: "Success is not how high you have climbed, but how you make a positive difference to the world.", author: "Roy T. Bennett" },
-      { text: "When you feel like quitting, think about why you started.", author: "Anonymous" },
-      { text: "Doubt kills more dreams than failure ever will.", author: "Suzy Kassem" },
-      { text: "The road to success and the road to failure are almost exactly the same.", author: "Colin R. Davis" },
       { text: "Your life does not get better by chance, it gets better by change.", author: "Jim Rohn" }
     ];
     
-    // Utility: format date (e.g., "Mon, Jan 01 2025")
-    function formatDate(dateObj) {
-      const options = { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' };
-      return dateObj.toLocaleDateString(undefined, options);
-    }
-    // Utility: get date key for localStorage in YYYY-MM-DD format
-    function getDateKey(dateObj) {
-      return dateObj.toISOString().substring(0, 10);
+    // DOM Elements
+    const container = document.getElementById('pageContainer');
+    const yearProgress = document.getElementById('yearProgress');
+    const daysCounter = document.getElementById('daysCounter');
+    const notification = document.getElementById('notification');
+    const streakBadge = document.getElementById('streakBadge');
+    const streakCount = document.getElementById('streakCount');
+    const resetBtn = document.getElementById('resetBtn');
+    const resetModal = document.getElementById('resetModal');
+    const resetToday = document.getElementById('resetToday');
+    const reset365 = document.getElementById('reset365');
+    const resetAll = document.getElementById('resetAll');
+    const cancelReset = document.getElementById('cancelReset');
+    
+    // Update streak badge
+    function updateStreakBadge() {
+      let badge = '🔰'; // Default badge
+      
+      if (coldModeStreak >= 90) {
+        badge = '💎';
+      } else if (coldModeStreak >= 30) {
+        badge = '🥇';
+      } else if (coldModeStreak >= 15) {
+        badge = '🥈';
+      } else if (coldModeStreak >= 7) {
+        badge = '🥉';
+      } else if (coldModeStreak >= 3) {
+        badge = '🔰';
+      }
+      
+      streakBadge.textContent = badge;
+      streakCount.textContent = `${coldModeStreak} days`;
     }
     
-    /* Generate Daily Layout */
-    function getDailyLayout(dateObj, dayIndex) {
+    // Date functions
+    function formatDate(date) {
+      const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+    
+    function getDateKey(date) {
+      return date.toISOString().split('T')[0];
+    }
+    
+    function calculateProgress() {
+      const daysPassed = completedDays.length;
+      const percentage = (daysPassed / TOTAL_DAYS) * 100;
+      
+      yearProgress.style.width = `${percentage}%`;
+      daysCounter.innerHTML = `<span>Day ${daysPassed}</span><span>365 Days</span>`;
+    }
+    
+    // Generate Daily Layout
+    function getDailyLayout(date, dayIndex) {
       const quote = quotes[dayIndex % quotes.length];
       return `
         <h2>Daily Planner</h2>
-        <div class="date-label">${formatDate(dateObj)}</div>
+        <div class="date-label">${formatDate(date)}</div>
+        
         <div class="quote">
           <p>"${quote.text}"</p>
           <span>- ${quote.author}</span>
         </div>
-        <div class="rating-box">
-          <label>Productivity:</label>
-          <input type="number" id="prod" min="0" max="10" placeholder="/10">
+        
+        <div class="rating-container">
+          <div class="rating-box">
+            <label>Productivity</label>
+            <input type="number" id="prod" min="0" max="10" placeholder="/10">
+          </div>
+          <div class="rating-box">
+            <label>Mood</label>
+            <input type="number" id="mood" min="0" max="10" placeholder="/10">
+          </div>
         </div>
-        <div class="rating-box">
-          <label>Mood:</label>
-          <input type="number" id="mood" min="0" max="10" placeholder="/10">
+        
+        <div class="section-title">Daily Prayers</div>
+        <div class="prayer-container">
+          <div class="prayer-item">
+            <span class="custom-checkbox" id="fajr_cb" data-state="0" data-symbol=""></span>
+            <span>Fajr</span>
+          </div>
+          <div class="prayer-item">
+            <span class="custom-checkbox" id="dhuhr_cb" data-state="0" data-symbol=""></span>
+            <span>Dhuhr</span>
+          </div>
+          <div class="prayer-item">
+            <span class="custom-checkbox" id="asr_cb" data-state="0" data-symbol=""></span>
+            <span>Asr</span>
+          </div>
+          <div class="prayer-item">
+            <span class="custom-checkbox" id="maghrib_cb" data-state="0" data-symbol=""></span>
+            <span>Maghrib</span>
+          </div>
+          <div class="prayer-item">
+            <span class="custom-checkbox" id="isha_cb" data-state="0" data-symbol=""></span>
+            <span>Isha</span>
+          </div>
         </div>
+        
+        <div class="section-title">Study Hours</div>
+        <div class="study-container">
+          <div class="study-item">
+            <span class="custom-checkbox" id="study1_cb" data-state="0" data-symbol="1"></span>
+            <span>1 hour</span>
+          </div>
+          <div class="study-item">
+            <span class="custom-checkbox" id="study2_cb" data-state="0" data-symbol="2"></span>
+            <span>2 hours</span>
+          </div>
+          <div class="study-item">
+            <span class="custom-checkbox" id="study3_cb" data-state="0" data-symbol="3"></span>
+            <span>3 hours</span>
+          </div>
+          <div class="study-item">
+            <span class="custom-checkbox" id="study4_cb" data-state="0" data-symbol="4"></span>
+            <span>4 hours</span>
+          </div>
+          <div class="study-item">
+            <span class="custom-checkbox" id="study5_cb" data-state="0" data-symbol="5+"></span>
+            <span>5+ hours</span>
+          </div>
+        </div>
+        
         <div class="section-title">Today's Agenda</div>
         <ul class="agenda-list">
           <li>
             <span class="custom-checkbox" id="agenda1_cb" data-state="0" data-symbol=""></span>
-            <input type="text" id="agenda1" placeholder="Agenda item">
+            <input type="text" id="agenda1" placeholder="Add agenda item">
           </li>
           <li>
             <span class="custom-checkbox" id="agenda2_cb" data-state="0" data-symbol=""></span>
-            <input type="text" id="agenda2" placeholder="Agenda item">
+            <input type="text" id="agenda2" placeholder="Add agenda item">
           </li>
           <li>
             <span class="custom-checkbox" id="agenda3_cb" data-state="0" data-symbol=""></span>
-            <input type="text" id="agenda3" placeholder="Agenda item">
+            <input type="text" id="agenda3" placeholder="Add agenda item">
           </li>
         </ul>
+        
         <div class="section-title">Daily Goals</div>
         <ul class="goals-list">
-          <li><input type="text" id="goal1" placeholder="Goal #1"></li>
-          <li><input type="text" id="goal2" placeholder="Goal #2"></li>
-          <li><input type="text" id="goal3" placeholder="Goal #3"></li>
+          <li><input type="text" id="goal1" placeholder="Enter goal #1"></li>
+          <li><input type="text" id="goal2" placeholder="Enter goal #2"></li>
+          <li><input type="text" id="goal3" placeholder="Enter goal #3"></li>
         </ul>
-        <div class="section-title">Reflection</div>
-        <textarea id="reflection" placeholder="Write your reflection here..."></textarea>
+        
+        <div class="section-title">Daily Reflection</div>
+        <textarea id="reflection" placeholder="Write your thoughts about today..."></textarea>
+        
         <div class="section-title">I am thankful for...</div>
-        <textarea id="thankful" class="thankful-textarea" placeholder="Write what you are thankful for..."></textarea>
-        <button id="saveBtn"><span class="save-icon">💾</span> Save</button>
-      `;
-    }
-    
-    /* Generate Weekly Review Layout with Save Button */
-    function getWeeklyReviewLayout(dateObj, weekNumber) {
-      return `
-        <h2>Week ${weekNumber} - Productivity Review</h2>
-        <div class="sub-header" style="text-align:center; margin-bottom:10px; font-style:italic;">Write your Sunday goal</div>
-        <div class="date-label">${formatDate(dateObj)}</div>
-        <div class="weekly-review">
-          <div class="section-title">Weekly Highlights</div>
-          <textarea id="weeklyHighlights" placeholder="What went well this week..."></textarea>
-          <div class="section-title">Areas to Improve</div>
-          <textarea id="areasImprove" placeholder="What can be improved next week..."></textarea>
-          <div class="section-title">Overall Reflection</div>
-          <textarea id="overallReflection" placeholder="Overall thoughts on the week..."></textarea>
+        <textarea id="thankful" class="thankful-textarea" placeholder="List things you're grateful for today..."></textarea>
+        
+        <div class="btn-container">
+          <button class="nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+          <button id="saveBtn"><i class="fas fa-save"></i> Save Daily</button>
+          <button class="nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <button id="saveWeeklyBtn"><span class="save-icon">💾</span> Save Weekly Review</button>
       `;
     }
     
-    /* Render page content based on currentOffset */
-    function renderPage(offset) {
-      const container = document.getElementById('pageContainer');
-      // Force fixed width and height on every render
-      container.style.width = "600px";
-      container.style.height = "850px";
-      let thisDate = new Date(startDate);
-      thisDate.setDate(startDate.getDate() + offset);
+    // Generate Weekly Review Layout
+    function getWeeklyReviewLayout(date, weekNumber) {
+      return `
+        <h2>Week ${weekNumber} - Weekly Review</h2>
+        <div class="date-label">${formatDate(date)}</div>
+        
+        <div class="quote">
+          <p>"Reflect on your progress and plan for the week ahead"</p>
+          <span>- Weekly Review</span>
+        </div>
+        
+        <div class="section-title">Weekly Highlights</div>
+        <textarea id="weeklyHighlights" placeholder="What went well this week..."></textarea>
+        
+        <div class="section-title">Areas to Improve</div>
+        <textarea id="areasImprove" placeholder="What can be improved next week..."></textarea>
+        
+        <div class="section-title">Overall Reflection</div>
+        <textarea id="overallReflection" placeholder="Your thoughts on the week..."></textarea>
+        
+        <div class="btn-container">
+          <button class="nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+          <button id="saveWeeklyBtn"><i class="fas fa-save"></i> Save Weekly</button>
+          <button class="nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      `;
+    }
+    
+    // Load data from localStorage
+    function loadData(date, isWeekly) {
+      const key = isWeekly ? `weekly_${getDateKey(date)}` : `daily_${getDateKey(date)}`;
+      const savedData = localStorage.getItem(key);
       
-      // Show weekly review ONLY on Sundays (getDay() === 0)
-      if (thisDate.getDay() === 0) {
-        const diffDays = Math.floor((thisDate - startDate) / (1000 * 60 * 60 * 24));
-        let weekNumber = Math.floor(diffDays / 7) + 1;
-        container.innerHTML = getWeeklyReviewLayout(thisDate, weekNumber);
-        loadWeeklyReviewData(thisDate);
-        document.getElementById('saveWeeklyBtn').addEventListener('click', function(e) {
-          e.preventDefault();
-          saveWeeklyReviewData(thisDate);
-        });
+      if (!savedData) return;
+      
+      const data = JSON.parse(savedData);
+      
+      if (isWeekly) {
+        if (document.getElementById('weeklyHighlights')) document.getElementById('weeklyHighlights').value = data.highlights || '';
+        if (document.getElementById('areasImprove')) document.getElementById('areasImprove').value = data.improvements || '';
+        if (document.getElementById('overallReflection')) document.getElementById('overallReflection').value = data.reflection || '';
       } else {
-        container.innerHTML = getDailyLayout(thisDate, offset);
-        loadCurrentDayData(thisDate);
-        document.getElementById('saveBtn').addEventListener('click', function(e) {
-          e.preventDefault();
-          saveCurrentDayData(thisDate);
-        });
-        initCustomCheckboxes();
-      }
-      addNavigationIcons();
-      localStorage.setItem("currentOffset", offset);
-    }
-    
-    /* Custom Checkbox Behavior: cycles through 0 -> 1 -> 2 -> 0 */
-    function initCustomCheckboxes() {
-      const checkboxes = document.querySelectorAll('.custom-checkbox');
-      checkboxes.forEach(cb => {
-        cb.addEventListener('click', () => {
-          let currentState = parseInt(cb.getAttribute('data-state'));
-          let nextState = (currentState + 1) % 3;
-          cb.setAttribute('data-state', nextState);
-          if(nextState === 1){
-            cb.setAttribute('data-symbol', '✓');
-          } else if(nextState === 2){
-            cb.setAttribute('data-symbol', '✗');
-          } else {
-            cb.setAttribute('data-symbol', '');
+        // Load daily data
+        if (document.getElementById('prod')) document.getElementById('prod').value = data.prod || '';
+        if (document.getElementById('mood')) document.getElementById('mood').value = data.mood || '';
+        
+        // Load prayer states
+        const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        prayers.forEach(prayer => {
+          const cb = document.getElementById(`${prayer}_cb`);
+          if (cb) {
+            const state = data.prayers?.[prayer] || 0;
+            cb.setAttribute('data-state', state);
+            cb.setAttribute('data-symbol', state === 1 ? '✓' : state === 2 ? '✗' : '');
           }
         });
-      });
+        
+        // Load study states
+        for (let i = 1; i <= 5; i++) {
+          const cb = document.getElementById(`study${i}_cb`);
+          if (cb) {
+            const state = data.study?.[`study${i}`] || 0;
+            cb.setAttribute('data-state', state);
+            cb.setAttribute('data-symbol', state === 1 ? (i === 5 ? '5+' : i) : '');
+          }
+        }
+        
+        // Load agenda and goals
+        for (let i = 1; i <= 3; i++) {
+          const agendaInput = document.getElementById(`agenda${i}`);
+          const agendaCb = document.getElementById(`agenda${i}_cb`);
+          const goalInput = document.getElementById(`goal${i}`);
+          
+          if (agendaInput) agendaInput.value = data[`agenda${i}`] || '';
+          if (goalInput) goalInput.value = data[`goal${i}`] || '';
+          
+          if (agendaCb) {
+            const state = data[`agenda${i}_state`] || 0;
+            agendaCb.setAttribute('data-state', state);
+            agendaCb.setAttribute('data-symbol', state === 1 ? '✓' : state === 2 ? '✗' : '');
+          }
+        }
+        
+        if (document.getElementById('reflection')) document.getElementById('reflection').value = data.reflection || '';
+        if (document.getElementById('thankful')) document.getElementById('thankful').value = data.thankful || '';
+      }
     }
     
-    /* Save Daily Data */
-    function saveCurrentDayData(dateObj) {
-      const key = "planner_" + getDateKey(dateObj);
-      const data = {
-        prod: document.getElementById('prod')?.value || "",
-        mood: document.getElementById('mood')?.value || "",
-        agenda1: document.getElementById('agenda1')?.value || "",
-        agenda1_state: document.getElementById('agenda1_cb')?.getAttribute('data-state') || "0",
-        agenda2: document.getElementById('agenda2')?.value || "",
-        agenda2_state: document.getElementById('agenda2_cb')?.getAttribute('data-state') || "0",
-        agenda3: document.getElementById('agenda3')?.value || "",
-        agenda3_state: document.getElementById('agenda3_cb')?.getAttribute('data-state') || "0",
-        goal1: document.getElementById('goal1')?.value || "",
-        goal2: document.getElementById('goal2')?.value || "",
-        goal3: document.getElementById('goal3')?.value || "",
-        reflection: document.getElementById('reflection')?.value || "",
-        thankful: document.getElementById('thankful')?.value || ""
-      };
+    // Save data to localStorage
+    function saveData(date, isWeekly) {
+      const key = isWeekly ? `weekly_${getDateKey(date)}` : `daily_${getDateKey(date)}`;
+      let data = {};
+      
+      if (isWeekly) {
+        data = {
+          highlights: document.getElementById('weeklyHighlights')?.value || '',
+          improvements: document.getElementById('areasImprove')?.value || '',
+          reflection: document.getElementById('overallReflection')?.value || ''
+        };
+      } else {
+        // Save daily data
+        data = {
+          prod: document.getElementById('prod')?.value || '',
+          mood: document.getElementById('mood')?.value || '',
+          reflection: document.getElementById('reflection')?.value || '',
+          thankful: document.getElementById('thankful')?.value || ''
+        };
+        
+        // Save prayer states
+        const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        data.prayers = {};
+        prayers.forEach(prayer => {
+          const cb = document.getElementById(`${prayer}_cb`);
+          if (cb) {
+            data.prayers[prayer] = parseInt(cb.getAttribute('data-state')) || 0;
+          }
+        });
+        
+        // Save study states
+        data.study = {};
+        for (let i = 1; i <= 5; i++) {
+          const cb = document.getElementById(`study${i}_cb`);
+          if (cb) {
+            data.study[`study${i}`] = parseInt(cb.getAttribute('data-state')) || 0;
+          }
+        }
+        
+        // Save agenda and goals
+        for (let i = 1; i <= 3; i++) {
+          data[`agenda${i}`] = document.getElementById(`agenda${i}`)?.value || '';
+          data[`agenda${i}_state`] = parseInt(document.getElementById(`agenda${i}_cb`)?.getAttribute('data-state')) || 0;
+          data[`goal${i}`] = document.getElementById(`goal${i}`)?.value || '';
+        }
+      }
+      
       localStorage.setItem(key, JSON.stringify(data));
-      alert("Daily Data saved for " + getDateKey(dateObj));
+      return true;
     }
     
-    /* Load Daily Data */
-    function loadCurrentDayData(dateObj) {
-      const key = "planner_" + getDateKey(dateObj);
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const data = JSON.parse(saved);
-        if (document.getElementById('prod')) document.getElementById('prod').value = data.prod;
-        if (document.getElementById('mood')) document.getElementById('mood').value = data.mood;
-        if (document.getElementById('agenda1')) document.getElementById('agenda1').value = data.agenda1;
-        if (document.getElementById('agenda1_cb')) {
-          const cb1 = document.getElementById('agenda1_cb');
-          const state1 = data.agenda1_state || "0";
-          cb1.setAttribute('data-state', state1);
-          if (state1 === "1") {
-            cb1.setAttribute('data-symbol', '✓');
-          } else if (state1 === "2") {
-            cb1.setAttribute('data-symbol', '✗');
-          } else {
-            cb1.setAttribute('data-symbol', '');
-          }
-        }
-        if (document.getElementById('agenda2')) document.getElementById('agenda2').value = data.agenda2;
-        if (document.getElementById('agenda2_cb')) {
-          const cb2 = document.getElementById('agenda2_cb');
-          const state2 = data.agenda2_state || "0";
-          cb2.setAttribute('data-state', state2);
-          if (state2 === "1") {
-            cb2.setAttribute('data-symbol', '✓');
-          } else if (state2 === "2") {
-            cb2.setAttribute('data-symbol', '✗');
-          } else {
-            cb2.setAttribute('data-symbol', '');
-          }
-        }
-        if (document.getElementById('agenda3')) document.getElementById('agenda3').value = data.agenda3;
-        if (document.getElementById('agenda3_cb')) {
-          const cb3 = document.getElementById('agenda3_cb');
-          const state3 = data.agenda3_state || "0";
-          cb3.setAttribute('data-state', state3);
-          if (state3 === "1") {
-            cb3.setAttribute('data-symbol', '✓');
-          } else if (state3 === "2") {
-            cb3.setAttribute('data-symbol', '✗');
-          } else {
-            cb3.setAttribute('data-symbol', '');
-          }
-        }
-        if (document.getElementById('goal1')) document.getElementById('goal1').value = data.goal1;
-        if (document.getElementById('goal2')) document.getElementById('goal2').value = data.goal2;
-        if (document.getElementById('goal3')) document.getElementById('goal3').value = data.goal3;
-        if (document.getElementById('reflection')) document.getElementById('reflection').value = data.reflection;
-        if (document.getElementById('thankful')) document.getElementById('thankful').value = data.thankful;
-      }
-    }
-    
-    /* Save Weekly Review Data */
-    function saveWeeklyReviewData(dateObj) {
-      const key = "weeklyReview_" + getDateKey(dateObj);
-      const data = {
-        weeklyHighlights: document.getElementById('weeklyHighlights')?.value || "",
-        areasImprove: document.getElementById('areasImprove')?.value || "",
-        overallReflection: document.getElementById('overallReflection')?.value || ""
-      };
-      localStorage.setItem(key, JSON.stringify(data));
-      alert("Weekly Review Data saved for " + getDateKey(dateObj));
-    }
-    
-    /* Load Weekly Review Data */
-    function loadWeeklyReviewData(dateObj) {
-      const key = "weeklyReview_" + getDateKey(dateObj);
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const data = JSON.parse(saved);
-        if (document.getElementById('weeklyHighlights')) document.getElementById('weeklyHighlights').value = data.weeklyHighlights;
-        if (document.getElementById('areasImprove')) document.getElementById('areasImprove').value = data.areasImprove;
-        if (document.getElementById('overallReflection')) document.getElementById('overallReflection').value = data.overallReflection;
-      }
-    }
-    
-    /* Add navigation icons inside the container */
-    function addNavigationIcons() {
-      const container = document.getElementById('pageContainer');
-      if (!document.getElementById('prevIcon')) {
-        const prev = document.createElement('div');
-        prev.className = "nav-icon nav-prev";
-        prev.id = "prevIcon";
-        prev.innerHTML = "&#8249;";
-        container.appendChild(prev);
-        prev.addEventListener('click', function() {
-          if (currentOffset > 0) transitionPage("prev");
-          else alert("This is the start date!");
-        });
-      }
-      if (!document.getElementById('nextIcon')) {
-        const next = document.createElement('div');
-        next.className = "nav-icon nav-next";
-        next.id = "nextIcon";
-        next.innerHTML = "&#8250;";
-        container.appendChild(next);
-        next.addEventListener('click', function() {
-          if (currentOffset < (TOTAL_DAYS - 1)) transitionPage("next");
-          else alert("You've reached the maximum day limit!");
-        });
-      }
-    }
-    
-    /* Smooth fade transition for page navigation */
-    function transitionPage(direction) {
-      const container = document.getElementById('pageContainer');
-      container.style.transition = "opacity 0.7s ease-in-out";
-      container.style.opacity = 0;
+    // Show notification
+    function showNotification(message) {
+      notification.textContent = message;
+      notification.classList.add('show');
       setTimeout(() => {
-        currentOffset = direction === "next" ? currentOffset + 1 : currentOffset - 1;
-        renderPage(currentOffset);
-        container.style.opacity = 0;
-        void container.offsetWidth;
-        container.style.transition = "opacity 0.7s ease-in-out";
-        container.style.opacity = 1;
-      }, 700);
+        notification.classList.remove('show');
+      }, 3000);
     }
     
-    /* Initial load */
-    window.addEventListener('DOMContentLoaded', () => {
-      renderPage(currentOffset);
-    });
-  </script>
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/final/service-worker.js')
-          .then(reg => console.log("Service Worker Registered", reg))
-          .catch(err => console.log("Service Worker Registration Failed", err));
+    // Update Cold Mode Streak
+    function updateStreak() {
+      const lastSavedDate = localStorage.getItem('lastSavedDate');
+      const today = new Date().toDateString();
+      
+      if (!lastSavedDate) {
+        // First time saving
+        coldModeStreak = 1;
+      } else if (lastSavedDate === today) {
+        // Already saved today - do nothing
+        return;
+      } else {
+        const lastDate = new Date(lastSavedDate);
+        const todayDate = new Date();
+        const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          // Consecutive day
+          coldModeStreak++;
+        } else {
+          // Streak broken
+          coldModeStreak = 1;
+        }
+      }
+      
+      // Save the streak and date
+      localStorage.setItem('coldModeStreak', coldModeStreak);
+      localStorage.setItem('lastSavedDate', today);
+      
+      // Update UI
+      updateStreakBadge();
+    }
+    
+    // Render the current day/week
+    function renderPage() {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + currentOffset);
+      
+      const isSunday = currentDate.getDay() === 0;
+      const weekNumber = Math.floor(currentOffset / 7) + 1;
+      
+      container.innerHTML = isSunday ? 
+        getWeeklyReviewLayout(currentDate, weekNumber) : 
+        getDailyLayout(currentDate, currentOffset);
+      
+      // Add event listeners
+      document.getElementById('prevBtn').addEventListener('click', () => navigate(-1));
+      document.getElementById('nextBtn').addEventListener('click', () => navigate(1));
+      
+      if (isSunday) {
+        document.getElementById('saveWeeklyBtn').addEventListener('click', saveWeekly);
+      } else {
+        document.getElementById('saveBtn').addEventListener('click', saveDaily);
+        initCheckboxes();
+      }
+      
+      // Load saved data
+      loadData(currentDate, isSunday);
+      
+      // Update progress
+      calculateProgress();
+      
+      // Update streak badge
+      updateStreakBadge();
+      
+      // Save current offset
+      localStorage.setItem("currentOffset", currentOffset);
+    }
+    
+    // Initialize checkboxes
+    function initCheckboxes() {
+      document.querySelectorAll('.custom-checkbox').forEach(cb => {
+        cb.addEventListener('click', function() {
+          const currentState = parseInt(this.getAttribute('data-state'));
+          const nextState = (currentState + 1) % 3;
+          this.setAttribute('data-state', nextState);
+          
+          // Update symbol
+          if (this.id.includes('study')) {
+            const symbol = this.getAttribute('data-symbol');
+            this.setAttribute('data-symbol', nextState === 1 ? symbol : '');
+          } else {
+            this.setAttribute('data-symbol', nextState === 1 ? '✓' : nextState === 2 ? '✗' : '');
+          }
+        });
       });
     }
+    
+    // Navigation
+    function navigate(direction) {
+      currentOffset += direction;
+      
+      // Boundary checks
+      if (currentOffset < 0) {
+        currentOffset = 0;
+        showNotification("This is the start date!");
+        return;
+      }
+      
+      renderPage();
+    }
+    
+    // Save functions
+    function saveDaily() {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + currentOffset);
+      
+      if (saveData(currentDate, false)) {
+        // Add day to completed days if not already added
+        const dateKey = getDateKey(currentDate);
+        if (!completedDays.includes(dateKey)) {
+          completedDays.push(dateKey);
+          localStorage.setItem('completedDays', JSON.stringify(completedDays));
+        }
+        
+        showNotification("Daily data saved successfully!");
+        
+        // Only update streak if we're saving today's data
+        const today = new Date();
+        if (currentDate.toDateString() === today.toDateString()) {
+          updateStreak();
+        }
+        
+        // Update progress after saving
+        calculateProgress();
+      }
+    }
+    
+    function saveWeekly() {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + currentOffset);
+      
+      if (saveData(currentDate, true)) {
+        showNotification("Weekly review saved successfully!");
+      }
+    }
+    
+    // Reset functions
+    function resetTodayData() {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + currentOffset);
+      const key = `daily_${getDateKey(currentDate)}`;
+      localStorage.removeItem(key);
+      
+      // Remove from completed days
+      const dateKey = getDateKey(currentDate);
+      completedDays = completedDays.filter(d => d !== dateKey);
+      localStorage.setItem('completedDays', JSON.stringify(completedDays));
+      
+      showNotification("Today's data has been reset!");
+      renderPage();
+      calculateProgress();
+    }
+    
+    function restart365Journey() {
+      // Reset the entire journey to start from today
+      startDate = new Date();
+      localStorage.setItem('startDate', startDate.toISOString());
+      
+      // Reset offset to 0 (today)
+      currentOffset = 0;
+      localStorage.setItem('currentOffset', currentOffset);
+      
+      // Reset streak
+      coldModeStreak = 0;
+      localStorage.setItem('coldModeStreak', coldModeStreak);
+      localStorage.removeItem('lastSavedDate');
+      
+      // Clear all daily/weekly data
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('daily_') || key.startsWith('weekly_')) {
+          localStorage.removeItem(key);
+        }
+      }
+      
+      // Reset completed days
+      completedDays = [];
+      localStorage.setItem('completedDays', JSON.stringify(completedDays));
+      
+      showNotification("365-day journey restarted from today!");
+      renderPage();
+      calculateProgress();
+    }
+    
+    function resetAllData() {
+      // Clear all keys
+      localStorage.clear();
+      
+      // Reset to defaults
+      startDate = new Date();
+      localStorage.setItem('startDate', startDate.toISOString());
+      currentOffset = 0;
+      localStorage.setItem('currentOffset', currentOffset);
+      coldModeStreak = 0;
+      completedDays = [];
+      
+      showNotification("All data has been completely reset!");
+      renderPage();
+      calculateProgress();
+    }
+    
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPage();
+      calculateProgress();
+      
+      // Reset functionality
+      resetBtn.addEventListener('click', () => {
+        resetModal.classList.add('show');
+      });
+      
+      resetToday.addEventListener('click', resetTodayData);
+      reset365.addEventListener('click', restart365Journey);
+      resetAll.addEventListener('click', resetAllData);
+      cancelReset.addEventListener('click', () => {
+        resetModal.classList.remove('show');
+      });
+    });
   </script>
 </body>
 </html>
